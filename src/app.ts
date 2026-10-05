@@ -1,6 +1,7 @@
 import {
   Invoice,
   addDays,
+  cyrillicFields,
   defaultInvoice,
   defaultLabels,
   formatMoney,
@@ -275,11 +276,43 @@ async function buildPdf(): Promise<Blob> {
 function changed() {
   save();
   $("#total").textContent = formatMoney(totals(invoice).total, invoice);
+  markCyrillic();
   itemsEl.querySelectorAll<HTMLElement>(".item").forEach((row, index) => {
     row.querySelector("output")!.textContent = formatMoney(lineAmount(invoice.items[index]), invoice);
   });
   window.clearTimeout(renderTimer);
   renderTimer = window.setTimeout(refreshPreview, 300);
+}
+
+const fieldNames: Record<string, string> = {
+  "sender.name": "имя отправителя",
+  "sender.details": "реквизиты отправителя",
+  "client.name": "компания клиента",
+  "client.details": "реквизиты клиента",
+  notes: "примечания",
+};
+
+// The invoice goes out in English; flag any field that still has Russian text.
+function markCyrillic() {
+  const paths = cyrillicFields(invoice);
+  form.querySelectorAll(".cyrillic").forEach((el) => el.classList.remove("cyrillic"));
+  for (const path of paths) {
+    const [kind, index] = path.split(".");
+    const el =
+      kind === "items"
+        ? itemsEl.querySelector(`.item[data-index="${index}"] [data-item="description"]`)
+        : form.querySelector(`[data-path="${path}"]`);
+    el?.classList.add("cyrillic");
+  }
+  const names = paths.map((path) => {
+    const [kind, index] = path.split(".");
+    if (kind === "items") return `строка работ ${Number(index) + 1}`;
+    if (kind === "labels") return "подписи в PDF";
+    return fieldNames[path] ?? path;
+  });
+  const warning = $("#lang-warning");
+  warning.hidden = names.length === 0;
+  warning.textContent = `В инвойсе есть русский текст: ${[...new Set(names)].join(", ")}. Инвойс уходит на английском, поправь подсвеченные поля.`;
 }
 
 async function refreshPreview() {

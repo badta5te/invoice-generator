@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { defaultInvoice, formatDate, formatMoney, nextInvoiceNumber, totals } from "../src/invoice";
+import { cyrillicFields, defaultInvoice, formatDate, formatMoney, nextInvoiceNumber, totals } from "../src/invoice";
 
 test("totals sum line items and apply tax", () => {
   const invoice = {
@@ -24,4 +24,17 @@ test("nextInvoiceNumber keeps prefix and zero padding", () => {
 test("formats money and dates like the sample", () => {
   assert.equal(formatMoney(1720, { currency: "USD", locale: "en-US" }), "$1,720.00");
   assert.equal(formatDate("2026-09-04", "en-US"), "Sep 4, 2026");
+});
+
+test("cyrillicFields flags fields with Russian text", () => {
+  const invoice = {
+    ...defaultInvoice(),
+    client: { name: "Acme Inc.", details: "Phoenix AZ 85016, США" },
+    items: [
+      { description: "Software development services", quantity: 1, rate: 1 },
+      { description: "Разработка ПО", quantity: 1, rate: 1 },
+    ],
+  };
+  assert.deepEqual(cyrillicFields(invoice), ["client.details", "items.1"]);
+  assert.deepEqual(cyrillicFields(defaultInvoice()), []);
 });

@@ -65,7 +65,7 @@ export function defaultInvoice(today = new Date()): Invoice {
     number: "0001",
     date: isoDate(today),
     dueDate: isoDate(addDays(today, 26)),
-    items: [{ description: "Software development", quantity: 0, rate: 0 }],
+    items: [{ description: "Software development services", quantity: 0, rate: 0 }],
     taxPercent: 0,
     notes: "",
     currency: "USD",
@@ -73,6 +73,22 @@ export function defaultInvoice(today = new Date()): Invoice {
     accentColor: "#B04A2F",
     labels: { ...defaultLabels },
   };
+}
+
+const CYRILLIC = /[\u0400-\u04FF]/;
+
+// Paths of text fields that would put non-English (Cyrillic) text on the PDF.
+export function cyrillicFields(invoice: Invoice): string[] {
+  const fields: [string, string][] = [
+    ["sender.name", invoice.sender.name],
+    ["sender.details", invoice.sender.details],
+    ["client.name", invoice.client.name],
+    ["client.details", invoice.client.details],
+    ["notes", invoice.notes],
+    ...invoice.items.map((item, i): [string, string] => [`items.${i}`, item.description]),
+    ...Object.entries(invoice.labels).map(([key, value]): [string, string] => [`labels.${key}`, value]),
+  ];
+  return fields.filter(([, value]) => CYRILLIC.test(value ?? "")).map(([path]) => path);
 }
 
 export function lineAmount(item: LineItem): number {

@@ -9,16 +9,16 @@ const demo: Invoice = {
   ...defaultInvoice(new Date(2026, 8, 4)),
   sender: {
     name: "IE Ivan Petrov",
-    details: "ivan@example.com\nГрузия, Тбилиси, ул. Руставели, 1",
+    details: "ivan@example.com\n1 Rustaveli Ave, Tbilisi, Georgia",
   },
   client: {
     name: "Acme Software Inc.",
-    details: "EIN: 12-3456789\n100 Main Street, Suite 200,\nPhoenix AZ 85016, США",
+    details: "EIN: 12-3456789\n100 Main Street, Suite 200,\nPhoenix AZ 85016, USA",
   },
   number: "0003",
   date: "2026-09-04",
   dueDate: "2026-09-30",
-  items: [{ description: "Разработка программного обеспечения Август", quantity: 43, rate: 40 }],
+  items: [{ description: "Software development services, August 2026", quantity: 43, rate: 40 }],
 };
 
 const fonts = {} as FontBytes;

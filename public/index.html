@@ -16,6 +16,8 @@
     </div>
   </header>
 
+  <p id="lang-warning" class="lang-warning" role="status" hidden></p>
+
   <main class="layout">
     <form id="form" class="editor" autocomplete="off">
       <section>
@@ -31,7 +33,7 @@
         <h2>От кого</h2>
         <label>Имя / компания <input data-path="sender.name" placeholder="IE Ivan Petrov"></label>
         <label>Email, адрес, реквизиты <span class="hint">каждая строка отдельно</span>
-          <textarea data-path="sender.details" rows="3" placeholder="you@example.com&#10;Адрес"></textarea>
+          <textarea data-path="sender.details" rows="3" placeholder="you@example.com&#10;Street, City, Country"></textarea>
         </label>
       </section>
 
@@ -118,7 +120,7 @@
 
   <template id="item-row">
     <div class="item">
-      <input data-item="description" placeholder="Разработка ПО, сентябрь" aria-label="Описание">
+      <input data-item="description" placeholder="Software development services, September 2026" aria-label="Описание">
       <input data-item="quantity" type="number" step="0.25" min="0" placeholder="Часы" aria-label="Часы">
       <input data-item="rate" type="number" step="0.01" min="0" placeholder="Ставка" aria-label="Ставка">
       <output data-item="amount"></output>
