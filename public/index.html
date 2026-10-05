@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Invoice Generator</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23B04A2F'/><text x='16' y='23' font-size='18' text-anchor='middle' fill='white' font-family='Georgia'>$</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Инвойсы</h1>
+    <div class="actions">
+      <button type="button" id="new-invoice" class="secondary" title="Следующий номер, сегодняшняя дата, те же реквизиты">Новый инвойс</button>
+      <button type="button" id="download" class="primary">Скачать PDF</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <form id="form" class="editor" autocomplete="off">
+      <section>
+        <h2>Инвойс</h2>
+        <div class="grid three">
+          <label>Номер <input data-path="number"></label>
+          <label>Дата <input type="date" data-path="date"></label>
+          <label>Оплатить до <input type="date" data-path="dueDate"></label>
+        </div>
+      </section>
+
+      <section>
+        <h2>От кого</h2>
+        <label>Имя / компания <input data-path="sender.name" placeholder="IE Ivan Petrov"></label>
+        <label>Email, адрес, реквизиты <span class="hint">каждая строка отдельно</span>
+          <textarea data-path="sender.details" rows="3" placeholder="you@example.com&#10;Адрес"></textarea>
+        </label>
+      </section>
+
+      <section>
+        <h2>Кому</h2>
+        <label>Компания <input data-path="client.name" placeholder="Acme Inc."></label>
+        <label>EIN, адрес <span class="hint">каждая строка отдельно</span>
+          <textarea data-path="client.details" rows="4" placeholder="EIN: 12-3456789&#10;100 Main Street&#10;Phoenix AZ 85016, USA"></textarea>
+        </label>
+      </section>
+
+      <section>
+        <h2>Работы</h2>
+        <div class="items-head" aria-hidden="true">
+          <span>Описание</span><span>Часы</span><span>Ставка</span><span>Сумма</span><span></span>
+        </div>
+        <div id="items"></div>
+        <button type="button" id="add-item" class="link">+ Добавить строку</button>
+        <div class="grid two totals-row">
+          <label>Налог, % <input type="number" step="0.01" min="0" data-path="taxPercent"></label>
+          <div class="total-box">Итого <strong id="total">—</strong></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Примечания</h2>
+        <label>Реквизиты для оплаты, комментарий <span class="hint">не обязательно</span>
+          <textarea data-path="notes" rows="3" placeholder="Bank: …&#10;IBAN: …&#10;SWIFT: …"></textarea>
+        </label>
+      </section>
+
+      <details>
+        <summary>Оформление и подписи в PDF</summary>
+        <div class="grid three">
+          <label>Валюта <input data-path="currency" list="currencies" maxlength="3"></label>
+          <label>Формат чисел и дат <input data-path="locale" list="locales"></label>
+          <label>Цвет акцента <input type="color" data-path="accentColor"></label>
+        </div>
+        <div class="grid three labels">
+          <label>Заголовок <input data-path="labels.title"></label>
+          <label>Номер <input data-path="labels.invoiceNumber"></label>
+          <label>Дата <input data-path="labels.date"></label>
+          <label>Срок оплаты <input data-path="labels.dueDate"></label>
+          <label>Кому <input data-path="labels.billTo"></label>
+          <label>Позиция <input data-path="labels.item"></label>
+          <label>Кол-во <input data-path="labels.quantity"></label>
+          <label>Ставка <input data-path="labels.rate"></label>
+          <label>Сумма <input data-path="labels.amount"></label>
+          <label>Подытог <input data-path="labels.subtotal"></label>
+          <label>Налог <input data-path="labels.tax"></label>
+          <label>Итого <input data-path="labels.total"></label>
+          <label>Примечания <input data-path="labels.notes"></label>
+        </div>
+        <button type="button" id="reset-labels" class="link">Вернуть стандартные подписи</button>
+      </details>
+
+      <details id="history-panel">
+        <summary>История <span id="history-count" class="hint"></span></summary>
+        <p class="hint">Сохраняется при скачивании PDF. Данные хранятся только в этом браузере.</p>
+        <ul id="history"></ul>
+        <div class="row">
+          <button type="button" id="export-json" class="link">Экспорт в JSON</button>
+          <label class="link file">Импорт из JSON <input type="file" id="import-json" accept="application/json"></label>
+        </div>
+      </details>
+    </form>
+
+    <section class="preview" aria-label="Предпросмотр">
+      <iframe id="preview" title="Предпросмотр PDF"></iframe>
+      <div id="preview-fallback" class="preview-fallback" hidden>
+        <p>Этот браузер не показывает PDF внутри страницы.</p>
+        <button type="button" id="open-preview" class="secondary">Открыть предпросмотр</button>
+      </div>
+      <p id="status" class="hint"></p>
+    </section>
+  </main>
+
+  <datalist id="currencies">
+    <option value="USD"><option value="EUR"><option value="GBP"><option value="GEL"><option value="RUB">
+  </datalist>
+  <datalist id="locales">
+    <option value="en-US"><option value="en-GB"><option value="de-DE"><option value="ru-RU">
+  </datalist>
+
+  <template id="item-row">
+    <div class="item">
+      <input data-item="description" placeholder="Разработка ПО, сентябрь" aria-label="Описание">
+      <input data-item="quantity" type="number" step="0.25" min="0" placeholder="Часы" aria-label="Часы">
+      <input data-item="rate" type="number" step="0.01" min="0" placeholder="Ставка" aria-label="Ставка">
+      <output data-item="amount"></output>
+      <button type="button" class="remove" aria-label="Удалить строку" title="Удалить строку">×</button>
+    </div>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
