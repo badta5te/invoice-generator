@@ -178,7 +178,7 @@ $("#reset-labels").addEventListener("click", () => {
 });
 
 $("#new-invoice").addEventListener("click", () => {
-  if (!confirm(`Создать инвойс № ${nextInvoiceNumber(invoice.number)}? Реквизиты и строки сохранятся, даты обновятся.`)) return;
+  if (!confirm(`Start invoice #${nextInvoiceNumber(invoice.number)}? Details and lines are kept, dates are updated.`)) return;
   const termDays = daysBetween(invoice.date, invoice.dueDate) ?? 26;
   const today = new Date();
   invoice = {
@@ -211,7 +211,7 @@ function renderHistory() {
       const { total } = totals(entry.invoice);
       button.innerHTML = "<span></span><span></span><span></span>";
       const [num, client, sum] = button.querySelectorAll("span");
-      num.textContent = `№ ${entry.invoice.number} · ${entry.invoice.date}`;
+      num.textContent = `#${entry.invoice.number} · ${entry.invoice.date}`;
       client.textContent = entry.invoice.client.name || "—";
       sum.textContent = formatMoney(total, entry.invoice);
       button.addEventListener("click", () => {
@@ -248,7 +248,7 @@ $<HTMLInputElement>("#import-json").addEventListener("change", async (event) => 
     renderHistory();
     changed();
   } catch {
-    alert("Не получилось прочитать файл.");
+    alert("Couldn't read that file. Pick a JSON file exported from this app.");
   }
 });
 
@@ -285,11 +285,11 @@ function changed() {
 }
 
 const fieldNames: Record<string, string> = {
-  "sender.name": "имя отправителя",
-  "sender.details": "реквизиты отправителя",
-  "client.name": "компания клиента",
-  "client.details": "реквизиты клиента",
-  notes: "примечания",
+  "sender.name": "your name",
+  "sender.details": "your details",
+  "client.name": "client company",
+  "client.details": "client details",
+  notes: "notes",
 };
 
 // The invoice goes out in English; flag any field that still has Russian text.
@@ -306,13 +306,13 @@ function markCyrillic() {
   }
   const names = paths.map((path) => {
     const [kind, index] = path.split(".");
-    if (kind === "items") return `строка работ ${Number(index) + 1}`;
-    if (kind === "labels") return "подписи в PDF";
+    if (kind === "items") return `work line ${Number(index) + 1}`;
+    if (kind === "labels") return "PDF labels";
     return fieldNames[path] ?? path;
   });
   const warning = $("#lang-warning");
   warning.hidden = names.length === 0;
-  warning.textContent = `В инвойсе есть русский текст: ${[...new Set(names)].join(", ")}. Инвойс уходит на английском, поправь подсвеченные поля.`;
+  warning.textContent = `Non-English (Cyrillic) text in: ${[...new Set(names)].join(", ")}. Fix the highlighted fields before sending.`;
 }
 
 async function refreshPreview() {
@@ -327,7 +327,7 @@ async function refreshPreview() {
     statusEl.textContent = "";
   } catch (error) {
     console.error(error);
-    statusEl.textContent = "Не удалось построить PDF. Подробности в консоли.";
+    statusEl.textContent = "Couldn't build the PDF. See the browser console for details.";
   }
 }
 
@@ -338,7 +338,7 @@ $("#download").addEventListener("click", async () => {
     remember(invoice);
   } catch (error) {
     console.error(error);
-    alert("Не удалось построить PDF.");
+    alert("Couldn't build the PDF. See the browser console for details.");
   }
 });
 

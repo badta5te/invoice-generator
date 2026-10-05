@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,10 +9,10 @@
 </head>
 <body>
   <header class="topbar">
-    <h1>Инвойсы</h1>
+    <h1>Invoices</h1>
     <div class="actions">
-      <button type="button" id="new-invoice" class="secondary" title="Следующий номер, сегодняшняя дата, те же реквизиты">Новый инвойс</button>
-      <button type="button" id="download" class="primary">Скачать PDF</button>
+      <button type="button" id="new-invoice" class="secondary" title="Next number, today's date, same details">New invoice</button>
+      <button type="button" id="download" class="primary">Download PDF</button>
     </div>
   </header>
 
@@ -21,91 +21,91 @@
   <main class="layout">
     <form id="form" class="editor" autocomplete="off">
       <section>
-        <h2>Инвойс</h2>
+        <h2>Invoice</h2>
         <div class="grid three">
-          <label>Номер <input data-path="number"></label>
-          <label>Дата <input type="date" data-path="date"></label>
-          <label>Оплатить до <input type="date" data-path="dueDate"></label>
+          <label>Number <input data-path="number"></label>
+          <label>Date <input type="date" data-path="date"></label>
+          <label>Due date <input type="date" data-path="dueDate"></label>
         </div>
       </section>
 
       <section>
-        <h2>От кого</h2>
-        <label>Имя / компания <input data-path="sender.name" placeholder="IE Ivan Petrov"></label>
-        <label>Email, адрес, реквизиты <span class="hint">каждая строка отдельно</span>
+        <h2>From</h2>
+        <label>Name / company <input data-path="sender.name" placeholder="IE Ivan Petrov"></label>
+        <label>Email, address, details <span class="hint">one per line</span>
           <textarea data-path="sender.details" rows="3" placeholder="you@example.com&#10;Street, City, Country"></textarea>
         </label>
       </section>
 
       <section>
-        <h2>Кому</h2>
-        <label>Компания <input data-path="client.name" placeholder="Acme Inc."></label>
-        <label>EIN, адрес <span class="hint">каждая строка отдельно</span>
+        <h2>Bill to</h2>
+        <label>Company <input data-path="client.name" placeholder="Acme Inc."></label>
+        <label>EIN, address <span class="hint">one per line</span>
           <textarea data-path="client.details" rows="4" placeholder="EIN: 12-3456789&#10;100 Main Street&#10;Phoenix AZ 85016, USA"></textarea>
         </label>
       </section>
 
       <section>
-        <h2>Работы</h2>
+        <h2>Work</h2>
         <div class="items-head" aria-hidden="true">
-          <span>Описание</span><span>Часы</span><span>Ставка</span><span>Сумма</span><span></span>
+          <span>Description</span><span>Hours</span><span>Rate</span><span>Amount</span><span></span>
         </div>
         <div id="items"></div>
-        <button type="button" id="add-item" class="link">+ Добавить строку</button>
+        <button type="button" id="add-item" class="link">+ Add line</button>
         <div class="grid two totals-row">
-          <label>Налог, % <input type="number" step="0.01" min="0" data-path="taxPercent"></label>
-          <div class="total-box">Итого <strong id="total">—</strong></div>
+          <label>Tax, % <input type="number" step="0.01" min="0" data-path="taxPercent"></label>
+          <div class="total-box">Total <strong id="total">—</strong></div>
         </div>
       </section>
 
       <section>
-        <h2>Примечания</h2>
-        <label>Реквизиты для оплаты, комментарий <span class="hint">не обязательно</span>
+        <h2>Notes</h2>
+        <label>Payment details, comments <span class="hint">optional</span>
           <textarea data-path="notes" rows="3" placeholder="Bank: …&#10;IBAN: …&#10;SWIFT: …"></textarea>
         </label>
       </section>
 
       <details>
-        <summary>Оформление и подписи в PDF</summary>
+        <summary>Style and PDF labels</summary>
         <div class="grid three">
-          <label>Валюта <input data-path="currency" list="currencies" maxlength="3"></label>
-          <label>Формат чисел и дат <input data-path="locale" list="locales"></label>
-          <label>Цвет акцента <input type="color" data-path="accentColor"></label>
+          <label>Currency <input data-path="currency" list="currencies" maxlength="3"></label>
+          <label>Number and date format <input data-path="locale" list="locales"></label>
+          <label>Accent color <input type="color" data-path="accentColor"></label>
         </div>
         <div class="grid three labels">
-          <label>Заголовок <input data-path="labels.title"></label>
-          <label>Номер <input data-path="labels.invoiceNumber"></label>
-          <label>Дата <input data-path="labels.date"></label>
-          <label>Срок оплаты <input data-path="labels.dueDate"></label>
-          <label>Кому <input data-path="labels.billTo"></label>
-          <label>Позиция <input data-path="labels.item"></label>
-          <label>Кол-во <input data-path="labels.quantity"></label>
-          <label>Ставка <input data-path="labels.rate"></label>
-          <label>Сумма <input data-path="labels.amount"></label>
-          <label>Подытог <input data-path="labels.subtotal"></label>
-          <label>Налог <input data-path="labels.tax"></label>
-          <label>Итого <input data-path="labels.total"></label>
-          <label>Примечания <input data-path="labels.notes"></label>
+          <label>Title <input data-path="labels.title"></label>
+          <label>Invoice number <input data-path="labels.invoiceNumber"></label>
+          <label>Date <input data-path="labels.date"></label>
+          <label>Due date <input data-path="labels.dueDate"></label>
+          <label>Bill to <input data-path="labels.billTo"></label>
+          <label>Item <input data-path="labels.item"></label>
+          <label>Quantity <input data-path="labels.quantity"></label>
+          <label>Rate <input data-path="labels.rate"></label>
+          <label>Amount <input data-path="labels.amount"></label>
+          <label>Subtotal <input data-path="labels.subtotal"></label>
+          <label>Tax <input data-path="labels.tax"></label>
+          <label>Total <input data-path="labels.total"></label>
+          <label>Notes <input data-path="labels.notes"></label>
         </div>
-        <button type="button" id="reset-labels" class="link">Вернуть стандартные подписи</button>
+        <button type="button" id="reset-labels" class="link">Reset to default labels</button>
       </details>
 
       <details id="history-panel">
-        <summary>История <span id="history-count" class="hint"></span></summary>
-        <p class="hint">Сохраняется при скачивании PDF. Данные хранятся только в этом браузере.</p>
+        <summary>History <span id="history-count" class="hint"></span></summary>
+        <p class="hint">Saved when you download a PDF. Data stays in this browser only.</p>
         <ul id="history"></ul>
         <div class="row">
-          <button type="button" id="export-json" class="link">Экспорт в JSON</button>
-          <label class="link file">Импорт из JSON <input type="file" id="import-json" accept="application/json"></label>
+          <button type="button" id="export-json" class="link">Export JSON</button>
+          <label class="link file">Import JSON <input type="file" id="import-json" accept="application/json"></label>
         </div>
       </details>
     </form>
 
-    <section class="preview" aria-label="Предпросмотр">
-      <iframe id="preview" title="Предпросмотр PDF"></iframe>
+    <section class="preview" aria-label="Preview">
+      <iframe id="preview" title="PDF preview"></iframe>
       <div id="preview-fallback" class="preview-fallback" hidden>
-        <p>Этот браузер не показывает PDF внутри страницы.</p>
-        <button type="button" id="open-preview" class="secondary">Открыть предпросмотр</button>
+        <p>This browser can't show PDFs inside the page.</p>
+        <button type="button" id="open-preview" class="secondary">Open preview</button>
       </div>
       <p id="status" class="hint"></p>
     </section>
@@ -120,11 +120,11 @@
 
   <template id="item-row">
     <div class="item">
-      <input data-item="description" placeholder="Software development services, September 2026" aria-label="Описание">
-      <input data-item="quantity" type="number" step="0.25" min="0" placeholder="Часы" aria-label="Часы">
-      <input data-item="rate" type="number" step="0.01" min="0" placeholder="Ставка" aria-label="Ставка">
+      <input data-item="description" placeholder="Software development services, September 2026" aria-label="Description">
+      <input data-item="quantity" type="number" step="0.25" min="0" placeholder="Hours" aria-label="Hours">
+      <input data-item="rate" type="number" step="0.01" min="0" placeholder="Rate" aria-label="Rate">
       <output data-item="amount"></output>
-      <button type="button" class="remove" aria-label="Удалить строку" title="Удалить строку">×</button>
+      <button type="button" class="remove" aria-label="Remove line" title="Remove line">×</button>
     </div>
   </template>
 
